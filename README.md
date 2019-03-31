@@ -15,10 +15,11 @@ dependencies {
     }
 3. 项目的AndroidManifest.xml中添加
 
-##     <activity
-##            android:name="com.zkdsp.sdk.VideoActivity"
-##            android:configChanges="orientation|keyboardHidden|screenSize"
-##            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+     <activity
+            android:name="com.zkdsp.sdk.VideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+     </activity>
 
 4.在需要促发广告的Activity中：
 
@@ -32,7 +33,8 @@ dependencies {
 
  handler = new VideoHandler(MainActivity.this, unit, token);//其中unit是广告位ID,Token是服务商标识，会单独提供
 
- listener = new VideoHandlerListener() {
+ listener = new VideoHandlerListener()
+ {
                          @Override
                          public void onVideoLoadSuccess(String unitId) {
                              Log.d(TAG, "onVideoLoadSuccess: " + unitId);
