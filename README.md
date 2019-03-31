@@ -72,9 +72,12 @@ dependencies {
                          }
                      };
  handler.setListener(listener);//设置回调方法
+
  handler.load();//加载广告
-if(handler != null && handler.isReady()) { //判断是否加载完成
-                    handler.show(); //如果加载完成了，就可以展示，调用show进入广告Activity，播放视频
+
+//如果加载完成，那么可以进行展示
+if(handler != null && handler.isReady()) {
+                    handler.show();
                 } else {
                     Log.d(TAG, "onClick: not ready" );
                 }
