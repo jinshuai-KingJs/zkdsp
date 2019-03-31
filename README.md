@@ -14,11 +14,14 @@ dependencies {
     ....................
     }
 3. 项目的AndroidManifest.xml中添加
- <activity
+
+     <activity
             android:name="com.zkdsp.sdk.VideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-4.重要的类，在需要促发广告的Activity中：
+
+4.在需要促发广告的Activity中：
+
  import com.zkdsp.sdk.VideoHandler;
  import com.zkdsp.sdk.VideoHandlerListener;
  VideoHandler handler;
@@ -77,8 +80,8 @@ dependencies {
 
 //如果加载完成，那么可以进行展示
 
-if(handler != null && handler.isReady())
-{
+    if(handler != null && handler.isReady())
+    {
 
                     handler.show();
 
@@ -87,7 +90,7 @@ if(handler != null && handler.isReady())
                     Log.d(TAG, "onClick: not ready" );
 
                 }
-
+    }
 
 
 
