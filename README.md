@@ -76,10 +76,18 @@ dependencies {
  handler.load();//加载广告
 
 //如果加载完成，那么可以进行展示
-if(handler != null && handler.isReady()) {
+
+if(handler != null && handler.isReady())
+{
+
                     handler.show();
+
                 } else {
+
                     Log.d(TAG, "onClick: not ready" );
+
                 }
+
+
 
 
