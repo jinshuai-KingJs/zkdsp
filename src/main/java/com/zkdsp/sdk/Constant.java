@@ -5,7 +5,7 @@ package com.zkdsp.sdk;
  */
 
 public class Constant {
-    public static boolean isDebug = true;
+    public static boolean isDebug = false;
 
     public static final String INTENT_UNIT = "intent_unit";
     public static final String INTENT_VIDEO = "intent_videourl";
