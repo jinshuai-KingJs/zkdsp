@@ -111,26 +111,35 @@ public class VideoHandler {
             }
             //请求成功执行的方法
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String resp = response.body().string();
-                Log.d(TAG, "onResponse: " + resp);
-                Gson gson = new Gson();
-                ResponseModel model = gson.fromJson(resp, ResponseModel.class);
+            public void onResponse(Call call, Response response) {
+                try {
+                    String resp = response.body().string();
+                    Log.d(TAG, "onResponse: " + resp);
+                    Gson gson = new Gson();
+                    ResponseModel model = gson.fromJson(resp, ResponseModel.class);
 
-                if(model == null || model.Code != 0 ){
-                    mListener.onVideoLoadFail("parse response " + resp + " failed!");
-                    return;
+                    if (model == null || model.Code != 0) {
+                        mListener.onVideoLoadFail("parse response " + resp + " failed!");
+                        return;
+                    }
+                    adsID = model.Data.resAdId;
+                    //没有填充
+                    if (model.Data.ad == null) {
+                        mListener.onVideoLoadFail("no valid ads now");
+                        return;
+                    }
+                    pageImg = model.Data.ad.img;
+                    logoImg = model.Data.ad.logo;
+                    pageTitle = model.Data.ad.title;
+                    pageImg = model.Data.ad.img;
+                    landPage = model.Data.ad.url;
+
+                    Log.d(TAG, "onResponse id: " + model.Data.resAdId);
+                    mListener.onLoadSuccess(unit);
+                    downloadMaterial(model); //下载素材到缓存,只是下载视频，图片临时加载就行
+                }catch (Exception e){
+                    mListener.onVideoLoadFail(e.getMessage());
                 }
-                adsID = model.Data.resAdId;
-                pageImg = model.Data.ad.img;
-                logoImg = model.Data.ad.logo;
-                pageTitle = model.Data.ad.title;
-                pageImg = model.Data.ad.img;
-                landPage = model.Data.ad.url;
-
-                Log.d(TAG, "onResponse id: " + model.Data.resAdId);
-                mListener.onLoadSuccess(unit);
-                downloadMaterial(model); //下载素材到缓存,只是下载视频，图片临时加载就行
             }
         });
     }

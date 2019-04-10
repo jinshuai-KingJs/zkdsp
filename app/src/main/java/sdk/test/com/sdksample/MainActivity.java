@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onVideoLoadFail(String errorMsg) {
+                            //如果没有填充，或者遇到错误，就调用这个接口
                             Log.d(TAG, "onVideoLoadFail: " + errorMsg);
                         }
 

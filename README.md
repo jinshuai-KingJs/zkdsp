@@ -84,7 +84,7 @@ dependencies {
 
  handler.load();//加载广告
 
-//如果加载完成，那么可以进行展示
+//如果加载完成，那么可以进行展示.示例APP里，点击一次button，促发加载，再次点击，如果加载成功，就可以展示
 
     if(handler != null && handler.isReady())
     {
