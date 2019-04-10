@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ZKdsp</string>
+    <string name="remainsec">#秒剩余</string>
 </resources>

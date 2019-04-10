@@ -7,6 +7,8 @@ import android.os.Bundle;
 import com.squareup.picasso.Picasso;
 import com.zkdsp.sdk.R;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -33,11 +38,15 @@ public class VideoActivity extends Activity{
     VideoView mVideoView;
     WebView mWebview;
     MediaController mMediaController;
-    LinearLayout videoviewLayout, encardContentLayout;
-    FrameLayout encardLayout,webviewLayout;
+    LinearLayout encardContentLayout;
+    FrameLayout encardLayout,webviewLayout,videoviewLayout;
     ImageView closeImg, encardImgView, encardLogoImgView;
-    TextView encardTitleTextView;
+    TextView encardTitleTextView, videoRemainTextView;
     Button encardBtn;
+    Timer timer;
+    int ticks;//剩余时间
+    int duration; //总的时间，用来恢复计时
+    String remainStr;
 
 
 
@@ -47,6 +56,9 @@ public class VideoActivity extends Activity{
         mContext = this;
         setContentView(R.layout.activity_video);
         bindView();
+        ticks = -1;
+        remainStr = getResources().getString(R.string.remainsec);
+        timer = new Timer();
 
 
         Intent intent = getIntent();
@@ -71,23 +83,53 @@ public class VideoActivity extends Activity{
 
 //        Log.i(TAG, "onCreate: get videoFile:" + videoFile);
         mMediaController = new MediaController(mContext,false);
-        if(!Constant.isDebug) {
-            mMediaController.setVisibility(View.INVISIBLE);
-        }
+//        if(!Constant.isDebug) {
+//            mMediaController.setVisibility(View.GONE);
+//        }
         //结束之后的监听方法
+
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp)
             {
                 //播放结束后的动作
+                if(timer != null) {
+                    timer.cancel();
+                    // 一定设置为null，否则定时器不会被回收
+                    timer = null;
+                }
                 Log.d(TAG, "onCompletion: " + videoFile);
                 onVideoComplete();
+            }
+        });
+
+        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                ticks = mVideoView.getDuration()/1000;
+                duration = ticks;
+                setTicks(ticks);
+//                Log.d(TAG, "total ticks: " + ticks );
+
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(ticks > 0) {
+                            ticks--;
+                            setTicks(ticks);
+                            Log.d(TAG, "remain ticks:" + ticks);
+                        }
+                    }
+                }, 1000, 1000);
             }
         });
         //开始播放视频
         if(!TextUtils.isEmpty(videoFile)){
             mVideoView.setVideoPath(videoFile);
-            mVideoView.setMediaController(mMediaController);
+            if(Constant.isDebug) {
+                mVideoView.setMediaController(mMediaController);
+            }
+
             mVideoView.seekTo(0);
             mVideoView.requestFocus();
             mVideoView.start();
@@ -104,8 +146,24 @@ public class VideoActivity extends Activity{
         }
     }
 
+    private void setTicks(final int val){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(val < 0 ){
+                    return;
+                }
+                String str = remainStr.replace("#", String.valueOf(val));
+                Log.d(TAG, "setTicks: " + str);
+                if(videoRemainTextView != null) {
+                    videoRemainTextView.setText(str);
+                }
+            }
+        });
+    }
+
     private void bindView(){
-        videoviewLayout = (LinearLayout) findViewById(R.id.video_layout);
+        videoviewLayout = (FrameLayout) findViewById(R.id.video_layout);
         encardContentLayout = (LinearLayout) findViewById(R.id.encard_content);
         encardLayout = (FrameLayout) findViewById(R.id.encard_layout);
         webviewLayout = (FrameLayout) findViewById(R.id.webview_layout);
@@ -113,6 +171,7 @@ public class VideoActivity extends Activity{
         encardImgView = (ImageView) findViewById(R.id.encard_img);
         encardLogoImgView = (ImageView) findViewById(R.id.encard_logo);
         encardTitleTextView = (TextView) findViewById(R.id.encard_title);
+        videoRemainTextView = (TextView) findViewById(R.id.video_remain);
         mWebview = (WebView) findViewById(R.id.webview);
         mVideoView = (VideoView) findViewById(R.id.video_view);
         encardBtn = (Button) findViewById(R.id.encard_button);
@@ -192,6 +251,8 @@ public class VideoActivity extends Activity{
         super.onResume();
         if(mVideoView != null && !mVideoView.isPlaying()){
 //            mVideoView.resume();
+            ticks = duration;//恢复计时
+            setTicks(ticks);
             mVideoView.seekTo(0);
             mVideoView.start();
         }
@@ -203,6 +264,10 @@ public class VideoActivity extends Activity{
         stopPlaybackVideo();
         if(mListener != null){
             mListener.onAdClose();
+        }
+        if(timer != null){
+            timer.cancel();
+            timer = null;
         }
     }
 

@@ -10,17 +10,28 @@
         android:layout_height="match_parent"
         android:background="#ffffff"/>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/video_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        >
         <VideoView
             android:id="@+id/video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center" />
-    </LinearLayout>
+            />
+        <TextView
+            android:id="@+id/video_remain"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:background="#E8E8E8"
+            android:layout_gravity="top|right"
+            android:text="@string/remainsec"
+            />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/encard_layout"
